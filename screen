@@ -1,0 +1,1798 @@
+<head><link rel="stylesheet" href="screen.css"></head>
+<style>
+  :root{
+    --ink:#12151A; --ink-soft:#1C2129;
+    --paper:#ECEFEC; --paper-dim:#DEE2DE;
+    --route:#3452FF; --route-dim:#8CA0FF;   
+    --signal:#D4FF3D; --rust:#FF5D3A; --asphalt:#5B6169;
+    --line-on-dark: rgba(236,239,236,0.14);
+    --line-on-light: rgba(18,21,26,0.12);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--paper); color:var(--ink); font-family:var(--font-body); -webkit-font-smoothing:antialiased;}
+  section{padding:72px 8vw;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; margin-bottom:20px; opacity:.72;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:700; letter-spacing:-.01em;}
+  p{line-height:1.6;}
+
+  .hero{
+    background:radial-gradient(120% 140% at 12% 0%, var(--ink-soft) 0%, var(--ink) 55%);
+    color:var(--paper); padding:84px 8vw 56px;
+  }
+  .hero .eyebrow{color:var(--signal);}
+  h1.title{font-size:clamp(30px,4vw,46px); max-width:760px; line-height:1.1; margin-bottom:16px;}
+  .hero-sub{color:var(--paper-dim); max-width:600px; font-size:15px;}
+
+  /* ---------- SCREENS GRID ---------- */
+  .screens{display:flex; gap:64px; flex-wrap:wrap; align-items:flex-start;}
+  .screen-col{flex:0 0 auto; width:296px;}
+  .screen-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .screen-tag .n{color:var(--route);}
+
+  /* phone frame */
+  .frame{
+    width:296px; background:var(--ink); border-radius:40px; padding:14px;
+    box-shadow:0 40px 70px -35px rgba(18,21,26,.4); border:1px solid rgba(255,255,255,.06);
+  }
+  .screen{
+    background:var(--ink); border-radius:28px; overflow:hidden; position:relative;
+    height:600px; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; padding:16px 22px 4px;
+    font-family:var(--font-mono); font-size:12px; color:var(--paper); flex-shrink:0; z-index:2; position:relative;
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:3px; height:3px; border-radius:50%; background:var(--paper);}
+
+  /* ---------- SPLASH ---------- */
+  .splash-body{
+    flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:radial-gradient(140% 120% at 50% 30%, #1C2129 0%, #12151A 70%);
+    position:relative; gap:22px; padding:0 24px;
+  }
+  .splash-badge-wrap{position:relative; width:96px; height:96px;}
+  .splash-ping{position:absolute; inset:0; border-radius:26px; border:1.4px solid var(--signal); animation:sping 2.4s cubic-bezier(.2,.7,.3,1) infinite;}
+  .splash-ping.d2{animation-delay:1.2s;}
+  @keyframes sping{0%{transform:scale(.86); opacity:.9;} 75%{transform:scale(1.55); opacity:0;} 100%{opacity:0;}}
+  .splash-badge{
+    position:relative; width:96px; height:96px; border-radius:26px; background:var(--ink-soft);
+    border:1px solid var(--line-on-dark); display:flex; align-items:center; justify-content:center;
+  }
+  .splash-word{font-family:var(--font-display); font-weight:700; font-size:26px; color:var(--paper); text-align:center;}
+  .splash-word b{color:var(--signal);}
+  .splash-tag{font-size:11.5px; color:var(--paper-dim); text-align:center; max-width:210px; line-height:1.5;}
+  .splash-loading{position:absolute; bottom:38px; display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .load-dots{display:flex; gap:6px;}
+  .load-dot{width:6px; height:6px; border-radius:50%; background:var(--route-dim); animation:pulse 1.2s ease-in-out infinite;}
+  .load-dot:nth-child(2){animation-delay:.15s;}
+  .load-dot:nth-child(3){animation-delay:.3s;}
+  @keyframes pulse{0%,80%,100%{opacity:.25;} 40%{opacity:1;}}
+  .load-label{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--asphalt);}
+
+  /* ---------- LOGIN ---------- */
+  .login-body{flex:1; background:var(--paper); display:flex; flex-direction:column; padding:8px 26px 26px;}
+  .login-brand{display:flex; align-items:center; gap:10px; margin:6px 0 30px;}
+  .login-mark{width:34px; height:34px; border-radius:9px; background:var(--ink); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .login-brand-name{font-family:var(--font-display); font-weight:700; font-size:15px;}
+  .login-h{font-size:24px; margin-bottom:6px;}
+  .login-sub{font-size:12.5px; color:var(--asphalt); margin-bottom:28px;}
+
+  .field{margin-bottom:16px;}
+  .field label{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); display:block; margin-bottom:7px;
+  }
+  .field input{
+    width:100%; padding:12px 14px; border-radius:10px; border:1.4px solid var(--line-on-light);
+    background:#fff; font-family:var(--font-body); font-size:13.5px; color:var(--ink);
+  }
+  .field.err input{border-color:var(--rust); background:rgba(255,93,58,.04);}
+  .field.err .err-msg{font-size:11px; color:var(--rust); margin-top:6px; display:flex; align-items:center; gap:5px;}
+  .field.err .err-msg::before{content:'!'; width:13px; height:13px; border-radius:50%; background:var(--rust); color:#fff; font-size:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+
+  .forgot{font-size:11.5px; color:var(--route); text-align:right; margin-bottom:22px; display:block; font-weight:500;}
+  .btn-primary{
+    width:100%; padding:14px; border-radius:12px; background:var(--route); color:#fff;
+    font-family:var(--font-body); font-weight:600; font-size:14px; text-align:center; margin-bottom:18px;
+  }
+  .divider{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .divider span{font-family:var(--font-mono); font-size:10px; color:var(--asphalt);}
+  .divider::before, .divider::after{content:''; flex:1; height:1px; background:var(--line-on-light);}
+  .btn-secondary{
+    width:100%; padding:13px; border-radius:12px; border:1.4px solid var(--ink); background:transparent;
+    color:var(--ink); font-family:var(--font-body); font-weight:600; font-size:13.5px; text-align:center;
+  }
+
+  /* ---------- ANNOTATIONS ---------- */
+  .annot{margin-top:24px; background:#fff; border:1px solid var(--line-on-light); border-radius:14px; padding:20px 22px;}
+  .annot-title{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--asphalt); margin-bottom:12px;}
+  .annot ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .annot li{font-size:12.5px; line-height:1.5; padding-left:18px; position:relative; color:var(--ink-soft);}
+  .annot li::before{content:'✓'; position:absolute; left:0; top:1px; color:#7a9316; font-size:10px; font-weight:700;}
+
+  footer{
+    background:var(--ink); color:var(--asphalt); padding:32px 8vw; font-family:var(--font-mono); font-size:11.5px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line-on-dark); margin-top:40px;
+  }
+
+  @media(max-width:760px){
+    section{padding:56px 6vw;}
+    .screens{gap:44px;}
+  }
+</style>
+ <style>
+  :root{
+    --ink:#12151A; --ink-soft:#1C2129;
+    --paper:#ECEFEC; --paper-dim:#DEE2DE;
+    --route:#3452FF; --route-dim:#8CA0FF;
+    --signal:#D4FF3D; --rust:#FF5D3A; --asphalt:#5B6169;
+    --line-on-dark: rgba(236,239,236,0.14);
+    --line-on-light: rgba(18,21,26,0.12);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--paper); color:var(--ink); font-family:var(--font-body); -webkit-font-smoothing:antialiased;}
+  section{padding:72px 8vw;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; margin-bottom:20px; opacity:.72;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:700; letter-spacing:-.01em;}
+  p{line-height:1.6;}
+
+  .hero{
+    background:radial-gradient(120% 140% at 12% 0%, var(--ink-soft) 0%, var(--ink) 55%);
+    color:var(--paper); padding:84px 8vw 56px;
+  }
+  .hero .eyebrow{color:var(--signal);}
+  h1.title{font-size:clamp(30px,4vw,46px); max-width:760px; line-height:1.1; margin-bottom:16px;}
+  .hero-sub{color:var(--paper-dim); max-width:600px; font-size:15px;}
+
+  .screens{display:flex; gap:56px; flex-wrap:wrap; align-items:flex-start;}
+  .screen-col{flex:0 0 auto; width:296px;}
+  .screen-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .screen-tag .n{color:var(--route);}
+
+  .frame{
+    width:296px; background:var(--ink); border-radius:40px; padding:14px;
+    box-shadow:0 40px 70px -35px rgba(18,21,26,.4); border:1px solid rgba(255,255,255,.06);
+  }
+  .screen{
+    background:var(--paper); border-radius:28px; overflow:hidden; position:relative;
+    height:600px; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; padding:16px 22px 4px;
+    font-family:var(--font-mono); font-size:12px; color:var(--ink); flex-shrink:0; z-index:2; position:relative;
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:3px; height:3px; border-radius:50%; background:var(--ink);}
+
+  .scr-body{flex:1; padding:6px 20px 20px; display:flex; flex-direction:column; overflow-y:auto;}
+  .scr-topbar{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .back-arrow{width:26px; height:26px; border-radius:8px; background:#fff; border:1px solid var(--line-on-light); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;}
+  .scr-title{font-size:17px;}
+
+  .field{margin-bottom:14px;}
+  .field label{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); display:block; margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%; padding:11px 13px; border-radius:10px; border:1.4px solid var(--line-on-light);
+    background:#fff; font-family:var(--font-body); font-size:13px; color:var(--ink);
+  }
+  .field.err input{border-color:var(--rust); background:rgba(255,93,58,.04);}
+  .field .err-msg{font-size:10.5px; color:var(--rust); margin-top:5px; display:flex; align-items:center; gap:5px;}
+  .field .err-msg::before{content:'!'; width:12px; height:12px; border-radius:50%; background:var(--rust); color:#fff; font-size:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .field .help{font-size:10px; color:var(--asphalt); margin-top:5px;}
+
+  .status-pill{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.04em; text-transform:uppercase;
+    padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:5px;
+  }
+  .status-pill.ok{background:rgba(212,255,61,.2); color:#5f7511;}
+  .status-pill.busy{background:rgba(52,82,255,.12); color:var(--route);}
+  .status-pill.off{background:rgba(91,97,105,.14); color:var(--asphalt);}
+  .status-pill::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+  .btn-primary{
+    width:100%; padding:13px; border-radius:12px; background:var(--route); color:#fff;
+    font-family:var(--font-body); font-weight:600; font-size:13.5px; text-align:center; margin-top:auto;
+  }
+  .btn-primary.signal{background:var(--signal); color:var(--ink);}
+  .btn-primary[disabled-look]{opacity:.4;}
+
+  .card{background:#fff; border:1.4px solid var(--line-on-light); border-radius:12px; padding:12px 14px; margin-bottom:10px;}
+  .card.selected{border-color:var(--route); background:rgba(52,82,255,.04);}
+  .card.disabled{opacity:.5;}
+  .card-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+  .card-name{font-family:var(--font-display); font-weight:700; font-size:13.5px;}
+  .card-sub{font-family:var(--font-mono); font-size:10.5px; color:var(--asphalt);}
+  .card-check{width:18px; height:18px; border-radius:50%; border:1.6px solid var(--line-on-light); flex-shrink:0;}
+  .card.selected .card-check{background:var(--route); border-color:var(--route); position:relative;}
+  .card.selected .card-check::after{content:'✓'; color:#fff; font-size:10px; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
+
+  .section-label{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--asphalt); margin:14px 0 8px;}
+  .section-label:first-child{margin-top:0;}
+
+  .confirm-banner{
+    background:rgba(212,255,61,.16); border:1px solid rgba(212,255,61,.45); border-radius:10px;
+    padding:11px 13px; margin-top:12px; display:flex; gap:8px; align-items:flex-start;
+  }
+  .confirm-banner .chk{color:#5f7511; font-size:11px; font-weight:700; flex-shrink:0;}
+  .confirm-banner span.txt{font-size:10.5px; color:var(--ink-soft); line-height:1.5;}
+
+  .annot{margin-top:24px; background:#fff; border:1px solid var(--line-on-light); border-radius:14px; padding:20px 22px;}
+  .annot-title{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--asphalt); margin-bottom:12px;}
+  .annot ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .annot li{font-size:12.5px; line-height:1.5; padding-left:18px; position:relative; color:var(--ink-soft);}
+  .annot li::before{content:'✓'; position:absolute; left:0; top:1px; color:#7a9316; font-size:10px; font-weight:700;}
+
+  footer{
+    background:var(--ink); color:var(--asphalt); padding:32px 8vw; font-family:var(--font-mono); font-size:11.5px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line-on-dark); margin-top:40px;
+  }
+
+  @media(max-width:760px){
+    section{padding:56px 6vw;}
+    .screens{gap:44px;}
+  }
+</style>
+ <style>
+  :root{
+    --ink:#12151A; --ink-soft:#1C2129;
+    --paper:#ECEFEC; --paper-dim:#DEE2DE;
+    --route:#3452FF; --route-dim:#8CA0FF;
+    --signal:#D4FF3D; --rust:#FF5D3A; --asphalt:#5B6169;
+    --line-on-dark: rgba(236,239,236,0.14);
+    --line-on-light: rgba(18,21,26,0.12);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--paper); color:var(--ink); font-family:var(--font-body); -webkit-font-smoothing:antialiased;}
+  section{padding:72px 8vw;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; margin-bottom:20px; opacity:.72;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:700; letter-spacing:-.01em;}
+  p{line-height:1.6;}
+
+  .hero{
+    background:radial-gradient(120% 140% at 12% 0%, var(--ink-soft) 0%, var(--ink) 55%);
+    color:var(--paper); padding:84px 8vw 56px;
+  }
+  .hero .eyebrow{color:var(--signal);}
+  h1.title{font-size:clamp(30px,4vw,46px); max-width:780px; line-height:1.1; margin-bottom:16px;}
+  .hero-sub{color:var(--paper-dim); max-width:620px; font-size:15px;}
+
+  .screens{display:flex; gap:56px; flex-wrap:wrap; align-items:flex-start;}
+  .screen-col{flex:0 0 auto; width:296px;}
+  .screen-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .screen-tag .n{color:var(--route);}
+
+  .frame{
+    width:296px; background:var(--ink); border-radius:40px; padding:14px;
+    box-shadow:0 40px 70px -35px rgba(18,21,26,.4); border:1px solid rgba(255,255,255,.06);
+  }
+  .screen{
+    background:var(--paper); border-radius:28px; overflow:hidden; position:relative;
+    height:600px; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; padding:16px 22px 4px;
+    font-family:var(--font-mono); font-size:12px; color:var(--ink); flex-shrink:0; z-index:2; position:relative;
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:3px; height:3px; border-radius:50%; background:var(--ink);}
+
+  .scr-body{flex:1; padding:6px 20px 20px; display:flex; flex-direction:column; overflow-y:auto;}
+  .scr-topbar{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+  .back-arrow{width:26px; height:26px; border-radius:8px; background:#fff; border:1px solid var(--line-on-light); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;}
+  .scr-title{font-size:16.5px;}
+  .scr-sub{font-size:11.5px; color:var(--asphalt); margin:-8px 0 16px; line-height:1.5;}
+
+  .field{margin-bottom:14px;}
+  .field label{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); display:block; margin-bottom:6px;
+  }
+  .field input, .field select{
+    width:100%; padding:11px 13px; border-radius:10px; border:1.4px solid var(--line-on-light);
+    background:#fff; font-family:var(--font-body); font-size:13px; color:var(--ink);
+  }
+  .field input.mono{font-family:var(--font-mono); letter-spacing:.03em;}
+  .field.err input{border-color:var(--rust); background:rgba(255,93,58,.04);}
+  .field .err-msg{font-size:10.5px; color:var(--rust); margin-top:5px; display:flex; align-items:center; gap:5px;}
+  .field .err-msg::before{content:'!'; width:12px; height:12px; border-radius:50%; background:var(--rust); color:#fff; font-size:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .field .help{font-size:10px; color:var(--asphalt); margin-top:5px;}
+
+  .status-pill{
+    font-family:var(--font-mono); font-size:9.5px; letter-spacing:.04em; text-transform:uppercase;
+    padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:5px;
+  }
+  .status-pill.ok{background:rgba(212,255,61,.2); color:#5f7511;}
+  .status-pill.warn{background:rgba(255,190,60,.2); color:#a17400;}
+  .status-pill.off{background:rgba(91,97,105,.14); color:var(--asphalt);}
+  .status-pill::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+  .btn-primary{
+    width:100%; padding:13px; border-radius:12px; background:var(--route); color:#fff;
+    font-family:var(--font-body); font-weight:600; font-size:13.5px; text-align:center; margin-top:auto;
+  }
+  .btn-primary.signal{background:var(--signal); color:var(--ink);}
+  .btn-secondary-sm{
+    width:100%; padding:12px; border-radius:12px; border:1.4px solid var(--ink); background:transparent;
+    color:var(--ink); font-family:var(--font-body); font-weight:600; font-size:12.5px; text-align:center; margin-bottom:12px;
+  }
+
+  .card{background:#fff; border:1.4px solid var(--line-on-light); border-radius:12px; padding:12px 14px; margin-bottom:10px;}
+  .card.selected{border-color:var(--route); background:rgba(52,82,255,.04);}
+  .card.disabled{opacity:.5;}
+  .card-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+  .card-name{font-family:var(--font-display); font-weight:700; font-size:13.5px;}
+  .card-sub{font-family:var(--font-mono); font-size:10.5px; color:var(--asphalt);}
+  .card-check{width:18px; height:18px; border-radius:50%; border:1.6px solid var(--line-on-light); flex-shrink:0;}
+  .card.selected .card-check{background:var(--route); border-color:var(--route); position:relative;}
+  .card.selected .card-check::after{content:'✓'; color:#fff; font-size:10px; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
+
+  .tabs{display:flex; background:var(--paper-dim); border-radius:12px; padding:3px; margin-bottom:18px;}
+  .tab{flex:1; text-align:center; padding:9px; border-radius:9px; font-size:11.5px; font-weight:600; font-family:var(--font-body);}
+  .tab.active{background:#fff; color:var(--ink); box-shadow:0 2px 6px rgba(18,21,26,.08);}
+  .tab.inactive{color:var(--asphalt);}
+
+  .confirm-banner{
+    background:rgba(212,255,61,.16); border:1px solid rgba(212,255,61,.45); border-radius:10px;
+    padding:11px 13px; margin-top:4px; margin-bottom:14px; display:flex; gap:8px; align-items:flex-start;
+  }
+  .confirm-banner.warn{background:rgba(255,93,58,.1); border-color:rgba(255,93,58,.4);}
+  .confirm-banner .chk{color:#5f7511; font-size:11px; font-weight:700; flex-shrink:0;}
+  .confirm-banner.warn .chk{color:var(--rust);}
+  .confirm-banner span.txt{font-size:10.5px; color:var(--ink-soft); line-height:1.5;}
+
+  .device-card{
+    background:var(--ink); border-radius:14px; padding:16px; margin-bottom:16px; display:flex; align-items:center; gap:12px;
+  }
+  .device-icon{width:38px; height:38px; border-radius:10px; background:var(--ink-soft); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .device-info .dname{color:#fff; font-family:var(--font-display); font-weight:700; font-size:13px;}
+  .device-info .dmeta{color:var(--paper-dim); font-family:var(--font-mono); font-size:10px; margin-top:2px;}
+
+  .meta-row{display:flex; justify-content:space-between; font-size:11px; padding:9px 0; border-bottom:1px dashed var(--line-on-light);}
+  .meta-row .k{color:var(--asphalt);}
+  .meta-row .v{font-family:var(--font-mono); color:var(--ink); font-weight:500;}
+
+  .annot{margin-top:24px; background:#fff; border:1px solid var(--line-on-light); border-radius:14px; padding:20px 22px;}
+  .annot-title{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--asphalt); margin-bottom:12px;}
+  .annot ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .annot li{font-size:12.5px; line-height:1.5; padding-left:18px; position:relative; color:var(--ink-soft);}
+  .annot li::before{content:'✓'; position:absolute; left:0; top:1px; color:#7a9316; font-size:10px; font-weight:700;}
+
+  .status-legend{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;}
+
+  footer{
+    background:var(--ink); color:var(--asphalt); padding:32px 8vw; font-family:var(--font-mono); font-size:11.5px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line-on-dark); margin-top:40px;
+  }
+
+  @media(max-width:760px){
+    section{padding:56px 6vw;}
+    .screens{gap:44px;}
+  }
+</style>
+<style>
+  :root{
+    --ink:#12151A; --ink-soft:#1C2129;
+    --paper:#ECEFEC; --paper-dim:#DEE2DE;
+    --route:#3452FF; --route-dim:#8CA0FF;
+    --signal:#D4FF3D; --rust:#FF5D3A; --asphalt:#5B6169;
+    --line-on-dark: rgba(236,239,236,0.14);
+    --line-on-light: rgba(18,21,26,0.12);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--paper); color:var(--ink); font-family:var(--font-body); -webkit-font-smoothing:antialiased;}
+  section{padding:72px 8vw;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; margin-bottom:20px; opacity:.72;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:700; letter-spacing:-.01em;}
+  p{line-height:1.6;}
+
+  .hero{
+    background:radial-gradient(120% 140% at 12% 0%, var(--ink-soft) 0%, var(--ink) 55%);
+    color:var(--paper); padding:84px 8vw 56px;
+  }
+  .hero .eyebrow{color:var(--signal);}
+  h1.title{font-size:clamp(30px,4vw,46px); max-width:780px; line-height:1.1; margin-bottom:16px;}
+  .hero-sub{color:var(--paper-dim); max-width:620px; font-size:15px;}
+
+  .screens{display:flex; gap:56px; flex-wrap:wrap; align-items:flex-start;}
+  .screen-col{flex:0 0 auto; width:296px;}
+  .screen-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .screen-tag .n{color:var(--route);}
+
+  .frame{
+    width:296px; background:var(--ink); border-radius:40px; padding:14px;
+    box-shadow:0 40px 70px -35px rgba(18,21,26,.4); border:1px solid rgba(255,255,255,.06);
+  }
+  .screen{
+    background:var(--paper); border-radius:28px; overflow:hidden; position:relative;
+    height:620px; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; padding:16px 22px 4px;
+    font-family:var(--font-mono); font-size:12px; color:var(--ink); flex-shrink:0; z-index:2; position:relative;
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:3px; height:3px; border-radius:50%; background:var(--ink);}
+
+  .scr-body{flex:1; padding:14px 18px 0; display:flex; flex-direction:column; overflow-y:auto;}
+  .dash-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
+  .dash-title{font-size:19px;}
+  .fleet-pill{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:.04em; background:var(--ink); color:#fff;
+    padding:5px 10px; border-radius:20px; white-space:nowrap;
+  }
+
+  .alert-banner{
+    border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; gap:9px; align-items:flex-start;
+    background:rgba(255,93,58,.1); border:1px solid rgba(255,93,58,.4);
+  }
+  .alert-banner.ok{background:rgba(212,255,61,.16); border-color:rgba(212,255,61,.45);}
+  .alert-banner .ico{width:16px; height:16px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; background:var(--rust);}
+  .alert-banner.ok .ico{background:#5f7511; color:#fff;}
+  .alert-banner .txt{font-size:11.5px; color:var(--ink-soft); line-height:1.4;}
+  .alert-banner .txt b{display:block; font-size:12px; margin-bottom:1px;}
+
+  .section-label{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--asphalt); margin-bottom:10px;}
+
+  .moto-card{
+    background:#fff; border:1.4px solid var(--line-on-light); border-radius:14px; padding:13px 14px; margin-bottom:10px;
+    display:flex; align-items:center; gap:12px; position:relative; overflow:hidden;
+  }
+  .moto-card::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--signal);}
+  .moto-card.alert::before{background:var(--rust);}
+  .moto-thumb{
+    width:42px; height:42px; border-radius:10px; background:var(--paper-dim); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .moto-info{flex:1; min-width:0;}
+  .moto-top{display:flex; justify-content:space-between; align-items:center; gap:6px;}
+  .moto-name{font-family:var(--font-display); font-weight:700; font-size:13.5px;}
+  .moto-plate{font-family:var(--font-mono); font-size:10px; color:var(--asphalt); margin-top:1px;}
+  .moto-meta{font-size:10px; color:var(--asphalt); margin-top:4px; display:flex; align-items:center; gap:5px;}
+  .status-dot{width:6px; height:6px; border-radius:50%; background:var(--signal); flex-shrink:0;}
+  .moto-card.alert .status-dot{background:var(--rust);}
+  .moto-tag{font-family:var(--font-mono); font-size:9px; padding:2px 7px; border-radius:20px; background:rgba(212,255,61,.2); color:#5f7511; white-space:nowrap;}
+  .moto-card.alert .moto-tag{background:rgba(255,93,58,.14); color:var(--rust);}
+  .chev{color:var(--asphalt); font-size:14px; flex-shrink:0;}
+
+  .bottom-nav{
+    display:flex; border-top:1px solid var(--line-on-light); background:#fff; flex-shrink:0; padding:10px 6px 14px;
+  }
+  .nav-item{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .nav-item .lbl{font-size:9.5px; color:var(--asphalt); font-family:var(--font-mono);}
+  .nav-item.active .lbl{color:var(--route); font-weight:600;}
+
+  .annot{margin-top:24px; background:#fff; border:1px solid var(--line-on-light); border-radius:14px; padding:20px 22px;}
+  .annot-title{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--asphalt); margin-bottom:12px;}
+  .annot ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .annot li{font-size:12.5px; line-height:1.5; padding-left:18px; position:relative; color:var(--ink-soft);}
+  .annot li::before{content:'✓'; position:absolute; left:0; top:1px; color:#7a9316; font-size:10px; font-weight:700;}
+
+  footer{
+    background:var(--ink); color:var(--asphalt); padding:32px 8vw; font-family:var(--font-mono); font-size:11.5px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line-on-dark); margin-top:40px;
+  }
+
+  @media(max-width:760px){
+    section{padding:56px 6vw;}
+    .screens{gap:44px;}
+  }
+</style>
+<style>
+  :root{
+    --ink:#12151A; --ink-soft:#1C2129;
+    --paper:#ECEFEC; --paper-dim:#DEE2DE;
+    --route:#3452FF; --route-dim:#8CA0FF;
+    --signal:#D4FF3D; --rust:#FF5D3A; --asphalt:#5B6169;
+    --line-on-dark: rgba(236,239,236,0.14);
+    --line-on-light: rgba(18,21,26,0.12);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--paper); color:var(--ink); font-family:var(--font-body); -webkit-font-smoothing:antialiased;}
+  section{padding:72px 8vw;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; margin-bottom:20px; opacity:.72;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:700; letter-spacing:-.01em;}
+  p{line-height:1.6;}
+
+  .hero{
+    background:radial-gradient(120% 140% at 12% 0%, var(--ink-soft) 0%, var(--ink) 55%);
+    color:var(--paper); padding:84px 8vw 56px;
+  }
+  .hero .eyebrow{color:var(--signal);}
+  h1.title{font-size:clamp(30px,4vw,46px); max-width:780px; line-height:1.1; margin-bottom:16px;}
+  .hero-sub{color:var(--paper-dim); max-width:620px; font-size:15px;}
+
+  .group-head{margin-bottom:32px;}
+  .group-head .step-tag{font-family:var(--font-mono); font-size:11px; color:var(--asphalt); letter-spacing:.06em;}
+  .group-head h2{font-size:clamp(22px,2.6vw,30px); margin:8px 0 6px;}
+  .group-head p{font-size:13.5px; color:var(--asphalt); max-width:600px;}
+
+  .screens{display:flex; gap:56px; flex-wrap:wrap; align-items:flex-start;}
+  .screen-col{flex:0 0 auto; width:296px;}
+  .screen-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .screen-tag .n{color:var(--route);}
+
+  .frame{
+    width:296px; background:var(--ink); border-radius:40px; padding:14px;
+    box-shadow:0 40px 70px -35px rgba(18,21,26,.4); border:1px solid rgba(255,255,255,.06);
+  }
+  .screen{
+    background:var(--paper); border-radius:28px; overflow:hidden; position:relative;
+    height:620px; display:flex; flex-direction:column;
+  }
+  .screen.on-dark{background:#171B21;}
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; padding:16px 22px 4px;
+    font-family:var(--font-mono); font-size:12px; color:var(--ink); flex-shrink:0; z-index:3; position:relative;
+  }
+  .statusbar.light{color:#fff;}
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:3px; height:3px; border-radius:50%; background:var(--ink);}
+  .statusbar.light .sb-dot{background:#fff;}
+
+  .scr-body{flex:1; padding:14px 18px 0; display:flex; flex-direction:column; overflow-y:auto; position:relative;}
+  .scr-topbar{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .back-arrow{width:26px; height:26px; border-radius:8px; background:#fff; border:1px solid var(--line-on-light); display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;}
+  .scr-title{font-size:17px;}
+  .scr-title.light{color:#fff;}
+
+  .bottom-nav{
+    display:flex; border-top:1px solid var(--line-on-light); background:#fff; flex-shrink:0; padding:10px 6px 14px; position:relative; z-index:3;
+  }
+  .nav-item{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .nav-item .lbl{font-size:9.5px; color:var(--asphalt); font-family:var(--font-mono);}
+  .nav-item.active .lbl{color:var(--route); font-weight:600;}
+
+  /* ---------- MAPA ---------- */
+  .map-canvas{
+    position:absolute; inset:0; top:0;
+    background:
+      linear-gradient(rgba(236,239,236,.05) 1px, transparent 1px) 0 0/30px 30px,
+      linear-gradient(90deg, rgba(236,239,236,.05) 1px, transparent 1px) 0 0/30px 30px,
+      #171B21;
+  }
+  .map-topbar{position:relative; z-index:2; display:flex; flex-direction:column; gap:10px; padding-top:2px;}
+  .map-chips{display:flex; gap:8px;}
+  .map-chip{
+    font-family:var(--font-mono); font-size:10px; padding:6px 12px; border-radius:20px;
+    background:rgba(255,255,255,.08); color:var(--paper-dim); border:1px solid rgba(255,255,255,.1);
+  }
+  .map-chip.active{background:var(--paper); color:var(--ink);}
+  .fence{
+    position:absolute; border:1.6px dashed var(--signal); border-radius:50% 45% 50% 48%;
+    background:rgba(212,255,61,.05);
+  }
+  .pin{position:absolute; width:16px; height:16px; border-radius:50%; box-shadow:0 0 0 5px; z-index:2;}
+  .pin.ok{background:var(--signal); box-shadow:0 0 0 5px rgba(212,255,61,.18);}
+  .pin.alert{background:var(--rust); box-shadow:0 0 0 5px rgba(255,93,58,.2); animation:pinpulse 1.6s ease-in-out infinite;}
+  @keyframes pinpulse{0%,100%{transform:scale(1);} 50%{transform:scale(1.15);}}
+
+  .sheet{
+    position:relative; z-index:3; margin-top:auto; background:#fff; border-radius:18px 18px 0 0;
+    padding:16px 18px 14px; box-shadow:0 -12px 28px rgba(0,0,0,.25);
+  }
+  .sheet-handle{width:34px; height:4px; background:var(--line-on-light); border-radius:3px; margin:0 auto 12px;}
+  .sheet-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  .sheet-name{font-family:var(--font-display); font-weight:700; font-size:15px;}
+  .sheet-tag{font-family:var(--font-mono); font-size:9px; padding:3px 9px; border-radius:20px; background:rgba(255,93,58,.14); color:var(--rust);}
+  .sheet-sub{font-family:var(--font-mono); font-size:10.5px; color:var(--asphalt); margin-bottom:12px;}
+  .sheet-row{display:flex; justify-content:space-between; font-size:11px; padding:7px 0; border-top:1px dashed var(--line-on-light);}
+  .sheet-row .k{color:var(--asphalt);}
+  .sheet-row .v{font-family:var(--font-mono); font-weight:500;}
+
+  /* ---------- HISTORICO ---------- */
+  .chip-row{display:flex; gap:8px; overflow-x:auto; margin-bottom:14px; padding-bottom:2px;}
+  .moto-chip{
+    font-family:var(--font-mono); font-size:11px; padding:8px 13px; border-radius:20px; white-space:nowrap;
+    background:#fff; border:1.4px solid var(--line-on-light); color:var(--asphalt); flex-shrink:0;
+  }
+  .moto-chip.active{background:var(--ink); border-color:var(--ink); color:#fff;}
+
+  .date-row{display:flex; align-items:center; justify-content:space-between; background:#fff; border:1.4px solid var(--line-on-light); border-radius:12px; padding:10px 14px; margin-bottom:16px;}
+  .date-row .darrow{color:var(--asphalt); font-size:14px;}
+  .date-row .dlabel{font-size:12.5px; font-weight:600;}
+
+  .route-preview{
+    background:var(--ink); border-radius:14px; height:170px; position:relative; margin-bottom:14px; overflow:hidden;
+  }
+  .route-preview svg{position:absolute; inset:0;}
+
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px;}
+  .stat-box{background:#fff; border:1.4px solid var(--line-on-light); border-radius:12px; padding:11px; text-align:center;}
+  .stat-box .sv{font-family:var(--font-display); font-weight:700; font-size:16px;}
+  .stat-box .sl{font-family:var(--font-mono); font-size:8.5px; color:var(--asphalt); text-transform:uppercase; margin-top:2px;}
+
+  .empty-state{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 20px; gap:12px;}
+  .empty-ico{width:56px; height:56px; border-radius:16px; background:var(--paper-dim); display:flex; align-items:center; justify-content:center;}
+  .empty-title{font-family:var(--font-display); font-weight:700; font-size:14px;}
+  .empty-sub{font-size:11.5px; color:var(--asphalt); max-width:220px; line-height:1.5;}
+
+  /* ---------- PERFIL ---------- */
+  .profile-head{display:flex; flex-direction:column; align-items:center; gap:10px; margin:8px 0 26px;}
+  .avatar{width:64px; height:64px; border-radius:20px; background:var(--ink); display:flex; align-items:center; justify-content:center;}
+  .avatar span{font-family:var(--font-display); font-weight:700; font-size:20px; color:var(--signal);}
+  .profile-name{font-family:var(--font-display); font-weight:700; font-size:16px;}
+  .profile-meta{font-family:var(--font-mono); font-size:10.5px; color:var(--asphalt);}
+
+  .menu-list{display:flex; flex-direction:column; gap:8px; margin-bottom:16px;}
+  .menu-item{
+    background:#fff; border:1.4px solid var(--line-on-light); border-radius:12px; padding:13px 14px;
+    display:flex; align-items:center; justify-content:space-between; font-size:12.5px; font-weight:500;
+  }
+  .menu-item .mi-left{display:flex; align-items:center; gap:10px;}
+  .mi-ico{width:30px; height:30px; border-radius:9px; background:var(--paper-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .toggle{width:36px; height:20px; border-radius:20px; background:var(--signal); position:relative; flex-shrink:0;}
+  .toggle::after{content:''; width:16px; height:16px; border-radius:50%; background:#fff; position:absolute; top:2px; right:2px;}
+
+  .logout-btn{
+    width:100%; padding:13px; border-radius:12px; border:1.4px solid var(--rust); background:transparent;
+    color:var(--rust); font-family:var(--font-body); font-weight:600; font-size:13px; text-align:center; margin-top:auto; margin-bottom:8px;
+  }
+  .version-txt{text-align:center; font-family:var(--font-mono); font-size:9.5px; color:var(--asphalt); margin-bottom:10px;}
+
+  .annot{margin-top:24px; background:#fff; border:1px solid var(--line-on-light); border-radius:14px; padding:20px 22px;}
+  .annot-title{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--asphalt); margin-bottom:12px;}
+  .annot ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .annot li{font-size:12.5px; line-height:1.5; padding-left:18px; position:relative; color:var(--ink-soft);}
+  .annot li::before{content:'✓'; position:absolute; left:0; top:1px; color:#7a9316; font-size:10px; font-weight:700;}
+
+  footer{
+    background:var(--ink); color:var(--asphalt); padding:32px 8vw; font-family:var(--font-mono); font-size:11.5px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line-on-dark); margin-top:20px;
+  }
+  .divider-line{border-top:1px solid var(--line-on-light); margin:0 8vw;}
+
+  @media(max-width:760px){
+    section{padding:56px 6vw;}
+    .screens{gap:44px;}
+    .divider-line{margin:0 6vw;}
+  }
+</style>
+<style>
+  :root{
+    --ink:#12151A; --ink-soft:#1C2129;
+    --paper:#ECEFEC; --paper-dim:#DEE2DE;
+    --route:#3452FF; --route-dim:#8CA0FF;
+    --signal:#D4FF3D; --rust:#FF5D3A; --asphalt:#5B6169;
+    --line-on-dark: rgba(236,239,236,0.14);
+    --line-on-light: rgba(18,21,26,0.12);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{background:var(--paper); color:var(--ink); font-family:var(--font-body); -webkit-font-smoothing:antialiased;}
+  section{padding:72px 8vw;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:10px; margin-bottom:20px; opacity:.72;
+  }
+  .eyebrow::before{content:''; width:7px; height:7px; border-radius:50%; background:currentColor;}
+  h1,h2,h3{font-family:var(--font-display); font-weight:700; letter-spacing:-.01em;}
+  p{line-height:1.6;}
+
+  .hero{
+    background:radial-gradient(120% 140% at 12% 0%, var(--ink-soft) 0%, var(--ink) 55%);
+    color:var(--paper); padding:84px 8vw 56px;
+  }
+  .hero .eyebrow{color:var(--signal);}
+  h1.title{font-size:clamp(30px,4vw,46px); max-width:780px; line-height:1.1; margin-bottom:16px;}
+  .hero-sub{color:var(--paper-dim); max-width:640px; font-size:15px;}
+
+  .flow-note{
+    display:inline-flex; align-items:center; gap:8px; margin-top:22px; font-family:var(--font-mono); font-size:11px;
+    color:var(--route-dim); background:var(--ink-soft); border:1px solid var(--line-on-dark); padding:9px 14px; border-radius:20px;
+  }
+
+  .screens{display:flex; gap:56px; flex-wrap:wrap; align-items:flex-start;}
+  .screen-col{flex:0 0 auto; width:296px;}
+  .screen-tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--asphalt); margin-bottom:14px; display:flex; align-items:center; gap:8px;
+  }
+  .screen-tag .n{color:var(--route);}
+
+  .frame{
+    width:296px; background:var(--ink); border-radius:40px; padding:14px;
+    box-shadow:0 40px 70px -35px rgba(18,21,26,.4); border:1px solid rgba(255,255,255,.06);
+  }
+  .screen{
+    background:var(--paper); border-radius:28px; overflow:hidden; position:relative;
+    height:620px; display:flex; flex-direction:column;
+  }
+  .statusbar{
+    display:flex; justify-content:space-between; align-items:center; padding:16px 22px 4px;
+    font-family:var(--font-mono); font-size:12px; color:var(--ink); flex-shrink:0; z-index:2; position:relative;
+  }
+  .statusbar .icons{display:flex; gap:5px; align-items:center;}
+  .sb-dot{width:3px; height:3px; border-radius:50%; background:var(--ink);}
+
+  .perm-body{flex:1; display:flex; flex-direction:column; padding:8px 26px 26px;}
+  .perm-illust{
+    width:96px; height:96px; border-radius:26px; background:var(--ink); margin:26px auto 24px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .perm-title{font-size:20px; text-align:center; margin-bottom:10px;}
+  .perm-sub{font-size:12.5px; color:var(--asphalt); text-align:center; line-height:1.55; margin-bottom:24px;}
+
+  .perm-list{display:flex; flex-direction:column; gap:12px; margin-bottom:auto;}
+  .perm-item{display:flex; align-items:flex-start; gap:10px;}
+  .perm-ico{width:26px; height:26px; border-radius:8px; background:rgba(212,255,61,.18); color:#5f7511; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;}
+  .perm-item span.txt{font-size:12px; color:var(--ink-soft); line-height:1.5; padding-top:3px;}
+
+  .btn-primary{
+    width:100%; padding:14px; border-radius:12px; background:var(--route); color:#fff;
+    font-family:var(--font-body); font-weight:600; font-size:14px; text-align:center; margin-top:22px; margin-bottom:12px;
+  }
+  .btn-ghost{
+    width:100%; padding:10px; text-align:center; font-size:12.5px; color:var(--asphalt); font-weight:500;
+  }
+  .helper-note{font-size:10px; color:var(--asphalt); text-align:center; margin-top:10px; line-height:1.5;}
+
+  /* system dialog overlay */
+  .sys-overlay{position:absolute; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:flex-end; z-index:5;}
+  .sys-dialog{
+    background:#fff; margin:0 12px 12px; border-radius:16px; padding:20px 18px; width:calc(100% - 24px);
+    box-shadow:0 20px 40px rgba(0,0,0,.3);
+  }
+  .sys-dialog .sd-title{font-family:var(--font-body); font-weight:700; font-size:14.5px; text-align:center; margin-bottom:6px;}
+  .sys-dialog .sd-body{font-size:11.5px; color:var(--asphalt); text-align:center; line-height:1.5; margin-bottom:16px;}
+  .sd-btn{padding:11px; text-align:center; font-size:13px; border-top:1px solid var(--line-on-light);}
+  .sd-btn.primary{color:var(--route); font-weight:600;}
+  .sd-btn.default{color:var(--ink);}
+
+  .annot{margin-top:24px; background:#fff; border:1px solid var(--line-on-light); border-radius:14px; padding:20px 22px;}
+  .annot-title{font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--asphalt); margin-bottom:12px;}
+  .annot ul{list-style:none; display:flex; flex-direction:column; gap:8px;}
+  .annot li{font-size:12.5px; line-height:1.5; padding-left:18px; position:relative; color:var(--ink-soft);}
+  .annot li::before{content:'✓'; position:absolute; left:0; top:1px; color:#7a9316; font-size:10px; font-weight:700;}
+
+  footer{
+    background:var(--ink); color:var(--asphalt); padding:32px 8vw; font-family:var(--font-mono); font-size:11.5px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; border-top:1px solid var(--line-on-dark); margin-top:40px;
+  }
+
+  @media(max-width:760px){
+    section{padding:56px 6vw;}
+    .screens{gap:44px;}
+  }
+</style> 
+<body> 
+  <section class="hero">
+  <div class="eyebrow">Fluxo de telas</div>
+  <h1 class="title">Como uma tela leva à outra — do primeiro acesso ao dia a dia da locadora.</h1>
+  <p class="hero-sub">Dividido em 4 fluxos menores em vez de um mapa gigante: onboarding, navegação principal, detalhes de uma moto, e o caminho de um alerta.</p>
+</section>
+    <div class="screens">
+
+    <!-- SPLASH -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">01</span> Splash Screen</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="splash-body">
+            <div class="splash-badge-wrap">
+              <div class="splash-ping"></div>
+              <div class="splash-ping d2"></div>
+              <div class="splash-badge">
+                <svg width="46" height="46" viewBox="0 0 100 100" fill="none">
+                  <polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#ECEFEC" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                  <circle cx="69" cy="24" r="7" fill="#D4FF3D"></circle>
+                </svg>
+              </div>
+            </div>
+            <div class="splash-word">Moto<b>Track</b></div>
+            <p class="splash-tag">Rastreamento sob medida pra locadora de motos</p>
+            <div class="splash-loading">
+              <div class="load-dots">
+                <span class="load-dot"></span><span class="load-dot"></span><span class="load-dot"></span>
+              </div>
+              <span class="load-label">verificando sessão</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Ping animado no ícone reforça a ideia de "sinal ativo" já na abertura</li>
+          <li>Texto "verificando sessão" — usuário com login salvo pula direto pro Dashboard (Fluxo 01)</li>
+          <li>Sem interação possível aqui — tela de transição, não deve prender o usuário</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">02</span> Login</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar" style="color:var(--ink)">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot" style="background:var(--ink)"></span><span class="sb-dot" style="background:var(--ink)"></span><span class="sb-dot" style="background:var(--ink)"></span></span>
+          </div>
+          <div class="login-body">
+            <div class="login-brand">
+              <div class="login-mark">
+                <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+                  <polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#ECEFEC" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                  <circle cx="69" cy="24" r="8" fill="#D4FF3D"></circle>
+                </svg>
+              </div>
+              <div class="login-brand-name">MotoTrack</div>
+            </div>
+
+            <div class="login-h">Entrar</div>
+            <p class="login-sub">Acesse sua conta pra ver sua frota</p>
+
+            <div class="field">
+              <label>E-mail ou telefone</label>
+              <input type="text" placeholder="voce@locadora.com" readonly="">
+            </div>
+
+            <div class="field err">
+              <label>Senha</label>
+              <input type="password" value="••••••••" readonly="">
+              <div class="err-msg">E-mail ou senha inválidos</div>
+            </div>
+
+            <a class="forgot">Esqueci minha senha</a>
+
+            <div class="btn-primary">Entrar</div>
+
+            <div class="divider"><span>OU</span></div>
+
+            <div class="btn-secondary">Criar conta</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Estado de erro exibido no campo de senha — mensagem clara, sem apontar qual campo especificamente errou (segurança)</li>
+          <li>Botão "Entrar" em rota-azul (ação primária); "Criar conta" em contorno (ação secundária)</li>
+          <li>Sem redes sociais no MVP — só e-mail/telefone e senha, como definido nos critérios de aceite</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CRIAR CONTA -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">03</span> Criar Conta</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar" style="color:var(--ink)">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot" style="background:var(--ink)"></span><span class="sb-dot" style="background:var(--ink)"></span><span class="sb-dot" style="background:var(--ink)"></span></span>
+          </div>
+          <div class="login-body">
+            <div class="login-brand">
+              <div class="login-mark">
+                <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+                  <polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#ECEFEC" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                  <circle cx="69" cy="24" r="8" fill="#D4FF3D"></circle>
+                </svg>
+              </div>
+              <div class="login-brand-name">MotoTrack</div>
+            </div>
+
+            <div class="login-h">Criar conta</div>
+            <p class="login-sub">Comece a acompanhar sua frota</p>
+
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" placeholder="Ex: Locadora Tag Motos" readonly="">
+            </div>
+
+            <div class="field">
+              <label>E-mail ou telefone</label>
+              <input type="text" placeholder="voce@locadora.com" readonly="">
+            </div>
+
+            <div class="field" style="margin-bottom:8px;">
+              <label>Senha</label>
+              <input type="password" placeholder="••••••••" readonly="">
+            </div>
+            <p style="font-size:10.5px; color:var(--asphalt); margin-bottom:22px;">Mínimo de 6 caracteres</p>
+
+            <div class="btn-primary">Criar conta</div>
+
+            <div class="divider"><span>OU</span></div>
+
+            <div class="btn-secondary">Já tenho conta</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>"Nome do negócio" em vez de "nome completo" — reforça que a conta é da locadora, não da pessoa</li>
+          <li>Regra de senha exibida como texto de apoio, não só no momento do erro</li>
+          <li>E-mail duplicado gera o mesmo padrão de erro do Login (campo + mensagem clara)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RECUPERAR SENHA -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">04</span> Recuperar Senha</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar" style="color:var(--ink)">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot" style="background:var(--ink)"></span><span class="sb-dot" style="background:var(--ink)"></span><span class="sb-dot" style="background:var(--ink)"></span></span>
+          </div>
+          <div class="login-body">
+            <div class="login-brand">
+              <div class="login-mark">
+                <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+                  <polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#ECEFEC" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                  <circle cx="69" cy="24" r="8" fill="#D4FF3D"></circle>
+                </svg>
+              </div>
+              <div class="login-brand-name">MotoTrack</div>
+            </div>
+
+            <div class="login-h">Recuperar senha</div>
+            <p class="login-sub">Enviamos um link de redefinição pro e-mail ou telefone cadastrado</p>
+
+            <div class="field">
+              <label>E-mail ou telefone</label>
+              <input type="text" placeholder="voce@locadora.com" readonly="">
+            </div>
+
+            <div class="btn-primary">Enviar link</div>
+
+            <div style="background:rgba(212,255,61,.14); border:1px solid rgba(212,255,61,.4); border-radius:10px; padding:12px 14px; margin-bottom:18px; display:flex; gap:8px; align-items:flex-start;">
+              <span style="color:#7a9316; font-size:12px; font-weight:700; flex-shrink:0;">✓</span>
+              <span style="font-size:11.5px; color:var(--ink-soft); line-height:1.5;">Link enviado. Confira sua caixa de entrada — ele expira em 15 minutos.</span>
+            </div>
+
+            <a class="forgot" style="text-align:center; display:block;">Voltar para o login</a>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Confirmação de envio aparece na própria tela — evita deixar o usuário sem retorno visual</li>
+          <li>Prazo de expiração do link comunicado de antemão, não só no e-mail</li>
+          <li>Não confirma se o e-mail existe na base — mesma mensagem pra qualquer e-mail digitado (evita vazar quais contas existem)</li>
+        </ul>
+      </div>
+    </div>
+   
+    <div class="screens">
+
+    <!-- CADASTRAR MOTO -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">05</span> Cadastrar Moto</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="scr-topbar">
+              <div class="back-arrow">←</div>
+              <div class="scr-title">Nova moto</div>
+            </div>
+
+            <div class="field err">
+              <label>Placa</label>
+              <input type="text" value="ABC-1234" readonly="">
+              <div class="err-msg">Essa placa já está cadastrada</div>
+            </div>
+
+            <div class="field">
+              <label>Modelo</label>
+              <input type="text" placeholder="Ex: Yamaha Factor 150" readonly="">
+            </div>
+
+            <div class="field">
+              <label>Ano</label>
+              <input type="text" placeholder="2023" readonly="">
+            </div>
+
+            <div class="field">
+              <label>Status</label>
+              <div><span class="status-pill ok">Disponível</span></div>
+              <p class="help">Definido automaticamente — moto nova começa sem locatário</p>
+            </div>
+
+            <div class="btn-primary">Salvar moto</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Erro de placa duplicada aparece assim que o campo perde o foco, sem esperar o "Salvar"</li>
+          <li>Status "Disponível" não é editável aqui — é consequência do cadastro, não uma escolha</li>
+          <li>Salva e volta pra lista de motos, onde ela já aparece imediatamente — pronta pra aparecer no dropdown do cadastro de locatário</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CADASTRAR LOCATARIO -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">06</span> Cadastrar Locatário</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="scr-topbar">
+              <div class="back-arrow">←</div>
+              <div class="scr-title">Novo locatário</div>
+            </div>
+
+            <div class="field">
+              <label>Nome</label>
+              <input type="text" placeholder="Ex: João Silva" readonly="">
+            </div>
+
+            <div class="field">
+              <label>Telefone</label>
+              <input type="text" placeholder="(21) 9 9999-9999" readonly="">
+            </div>
+
+            <div class="field">
+              <label>Moto vinculada</label>
+              <select>
+                <option>Nenhuma por enquanto</option>
+                <option selected="">ABC-1234 · Factor 150 · Disponível</option>
+              </select>
+              <p class="help">Só motos com status "Disponível" aparecem na lista</p>
+            </div>
+
+            <div class="confirm-banner">
+              <span class="chk">✓</span>
+              <span class="txt">Ao salvar, ABC-1234 muda automaticamente para "Em locação".</span>
+            </div>
+
+            <div class="btn-primary">Salvar locatário</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Dropdown substitui a tela separada de vínculo — cadastro e vinculação acontecem juntos</li>
+          <li>Lista mostra só motos "Disponível"; uma "Em locação" não aparece como opção (regra: 1 moto → 1 contrato ativo)</li>
+          <li>Campo opcional — dá pra cadastrar o locatário sem moto e vincular depois, editando o cadastro</li>
+          <li>Só nome e telefone são obrigatórios; qualquer outro dado (CPF, endereço) fica pra v2</li>
+        </ul>
+      </div>
+    </div>
+    <section>
+        <div class="screens">
+
+    <!-- LOCALIZAÇÃO -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">07</span> Permissão de Localização</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="perm-body">
+            <div class="perm-illust">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+                <path d="M12 22s7-7.58 7-13a7 7 0 1 0-14 0c0 5.42 7 13 7 13Z" stroke="#D4FF3D" stroke-width="1.8" stroke-linejoin="round"></path>
+                <circle cx="12" cy="9" r="2.6" fill="#D4FF3D"></circle>
+              </svg>
+            </div>
+            <div class="perm-title">Precisamos da sua localização</div>
+            <p class="perm-sub">É assim que o MotoTrack mostra onde cada moto está e avisa quando alguma sair da área combinada.</p>
+
+            <div class="perm-list">
+              <div class="perm-item"><span class="perm-ico">✓</span><span class="txt">Localização em tempo real no mapa</span></div>
+              <div class="perm-item"><span class="perm-ico">✓</span><span class="txt">Alertas de cerca virtual (saída de área)</span></div>
+              <div class="perm-item"><span class="perm-ico">✓</span><span class="txt">Histórico de trajetos por moto</span></div>
+            </div>
+
+            <div class="btn-primary">Permitir acesso</div>
+            <div class="btn-ghost">Agora não</div>
+            <p class="helper-note">Sem essa permissão, o rastreamento e os alertas de área não funcionam. Dá pra ativar depois em Perfil.</p>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Tela própria explica o motivo antes do diálogo nativo do sistema — aumenta a chance de aceite</li>
+          <li>"Agora não" não trava o cadastro — segue pra próxima etapa, só sem rastreamento até ativar depois</li>
+          <li>Aviso do que fica limitado é direto, sem letra miúda</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- DIALOGO NATIVO -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">08</span> Diálogo do sistema</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="perm-body" style="filter:blur(1.5px); opacity:.6;">
+            <div class="perm-illust">
+              <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+                <path d="M12 22s7-7.58 7-13a7 7 0 1 0-14 0c0 5.42 7 13 7 13Z" stroke="#D4FF3D" stroke-width="1.8" stroke-linejoin="round"></path>
+                <circle cx="12" cy="9" r="2.6" fill="#D4FF3D"></circle>
+              </svg>
+            </div>
+            <div class="perm-title">Precisamos da sua localização</div>
+          </div>
+          <div class="sys-overlay">
+            <div class="sys-dialog">
+              <div class="sd-title">Permitir que "MotoTrack" acesse sua localização?</div>
+              <div class="sd-body">Usado para mostrar sua frota no mapa e enviar alertas de cerca virtual.</div>
+              <div class="sd-btn primary">Permitir enquanto usa o app</div>
+              <div class="sd-btn default">Permitir uma vez</div>
+              <div class="sd-btn default">Não permitir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Diálogo é do sistema operacional (iOS/Android) — não é customizável, só documentado aqui pra referência de fluxo</li>
+          <li>"Enquanto usa o app" é suficiente pro MVP; não pedimos localização em segundo plano ainda</li>
+          <li>Se a pessoa recusar aqui, o app respeita e mostra o estado "sem permissão" no Mapa e no Dashboard</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- NOTIFICACOES -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">09</span> Permissão de Notificações</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="perm-body">
+            <div class="perm-illust">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9Z" stroke="#D4FF3D" stroke-width="1.8" stroke-linejoin="round"></path>
+                <path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="#D4FF3D" stroke-width="1.8" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <div class="perm-title">Ative as notificações</div>
+            <p class="perm-sub">Alertas de fora da área ou parada suspeita chegam por notificação — sem isso, você só vê abrindo o app.</p>
+
+            <div class="perm-list">
+              <div class="perm-item"><span class="perm-ico">✓</span><span class="txt">Alerta imediato de saída de área</span></div>
+              <div class="perm-item"><span class="perm-ico">✓</span><span class="txt">Aviso de parada prolongada</span></div>
+              <div class="perm-item"><span class="perm-ico">✓</span><span class="txt">Só o essencial — sem notificação de propaganda</span></div>
+            </div>
+
+            <div class="btn-primary">Ativar notificações</div>
+            <div class="btn-ghost">Agora não</div>
+            <p class="helper-note">Dá pra ativar depois em Perfil → Notificações push, a qualquer momento.</p>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Terceiro item da lista ("sem notificação de propaganda") existe pra reduzir a hesitação típica de aceitar push</li>
+          <li>Aponta explicitamente pro toggle em Perfil — reforça que a decisão não é definitiva</li>
+          <li>Vem depois da tela de localização — pede uma permissão de cada vez, nunca as duas juntas</li>
+        </ul>
+      </div>
+    </div>
+    </section>
+
+  
+    <div class="screens">
+
+    <!-- SELECIONAR MOTO -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">10</span> Selecionar Moto</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="scr-topbar">
+              <div class="back-arrow">←</div>
+              <div class="scr-title">Conectar rastreador</div>
+            </div>
+            <p class="scr-sub">Selecione a moto que vai receber o rastreador</p>
+
+            <div class="card selected">
+              <div class="card-top">
+                <span class="card-name">ABC-1234</span>
+                <span class="card-check"></span>
+              </div>
+              <span class="card-sub">Factor 150 · sem rastreador</span>
+            </div>
+
+            <div class="card disabled">
+              <div class="card-top">
+                <span class="card-name">XYZ-5678</span>
+                <span class="status-pill ok">Já possui rastreador</span>
+              </div>
+              <span class="card-sub">Nmax 160 · conectado</span>
+            </div>
+
+            <div class="card disabled">
+              <div class="card-top">
+                <span class="card-name">QWE-9012</span>
+                <span class="status-pill ok">Já possui rastreador</span>
+              </div>
+              <span class="card-sub">CG 160 · conectado</span>
+            </div>
+
+            <div class="btn-primary">Continuar</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Motos que já têm rastreador ativo aparecem desabilitadas, não somem — reforça a regra "1 rastreador ativo por moto"</li>
+          <li>Substituir um rastreador é uma ação separada, feita a partir dos detalhes da moto (não daqui)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PAREAR RASTREADOR -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">11</span> Parear Rastreador</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="scr-topbar">
+              <div class="back-arrow">←</div>
+              <div class="scr-title">Rastreador · ABC-1234</div>
+            </div>
+
+            <div class="tabs">
+              <div class="tab active">Digitar código</div>
+              <div class="tab inactive">Escanear QR</div>
+            </div>
+
+            <div class="field err">
+              <label>IMEI ou ID do rastreador</label>
+              <input type="text" class="mono" value="8654 3312 09" readonly="">
+              <div class="err-msg">Rastreador já vinculado à moto XYZ-5678</div>
+            </div>
+            <p class="help" style="margin-top:-8px; margin-bottom:14px;">Encontre esse código na etiqueta do aparelho</p>
+
+            <div class="btn-primary">Parear rastreador</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Toggle entre digitar código e escanear QR — o QR só preenche o mesmo campo automaticamente</li>
+          <li>Sistema valida o código antes de concluir; erro mostrado é específico (rastreador já vinculado a outra moto)</li>
+          <li>Campo em fonte mono — reforça que é um dado técnico, igual placas e coordenadas no resto do app</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TESTE DE CONEXAO -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">12</span> Teste de Conexão</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="scr-topbar">
+              <div class="back-arrow">←</div>
+              <div class="scr-title">Rastreador · ABC-1234</div>
+            </div>
+
+            <div class="device-card">
+              <div class="device-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#D4FF3D" stroke-width="2"></circle><path d="M5 12a7 7 0 0 1 14 0M2 12a10 10 0 0 1 20 0" stroke="#D4FF3D" stroke-width="1.6" stroke-linecap="round"></path></svg>
+              </div>
+              <div class="device-info">
+                <div class="dname">ID 8654 3312 09</div>
+                <div class="dmeta">PAREADO COM ABC-1234</div>
+              </div>
+            </div>
+
+            <div class="meta-row"><span class="k">Status</span><span class="v"><span class="status-pill ok">Conectado</span></span></div>
+            <div class="meta-row"><span class="k">Última comunicação</span><span class="v">hoje, 09:41</span></div>
+
+            <div class="confirm-banner" style="margin-top:14px;">
+              <span class="chk">✓</span>
+              <span class="txt">Localização recebida com sucesso no teste de comunicação.</span>
+            </div>
+
+            <div class="btn-secondary-sm">Testar conexão novamente</div>
+            <div class="btn-primary signal">Concluir</div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Teste é uma ação explícita ("Testar conexão"), não só um status passivo — dá confiança real de que funciona</li>
+          <li>Data/hora da última comunicação sempre visível, mesmo depois de fechar e reabrir o app</li>
+          <li>Em caso de falha, a mesma área mostra orientação pra verificar instalação/sinal, em vez do banner verde</li>
+        </ul>
+        <div class="status-legend">
+          <span class="status-pill ok">Conectado</span>
+          <span class="status-pill warn">Sinal fraco</span>
+          <span class="status-pill off">Offline</span>
+        </div>
+      </div>
+    </div>
+
+<section>
+<div class="screens">
+
+    <!-- COM ALERTA -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">13</span> Dashboard · Com Alerta</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="dash-head">
+              <div class="dash-title">Sua frota</div>
+              <span class="fleet-pill">3/3 ONLINE</span>
+            </div>
+
+            <div class="alert-banner">
+              <span class="ico">!</span>
+              <span class="txt"><b>1 alerta ativo</b>XYZ-5678 saiu da área combinada</span>
+            </div>
+
+            <div class="section-label">Motos</div>
+
+            <div class="moto-card">
+              <div class="moto-thumb">
+                <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#12151A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+              </div>
+              <div class="moto-info">
+                <div class="moto-top">
+                  <span class="moto-name">ABC-1234</span>
+                  <span class="moto-tag">Na área</span>
+                </div>
+                <div class="moto-plate">Factor 150 · João Silva</div>
+                <div class="moto-meta"><span class="status-dot"></span>atualizado há 2 min</div>
+              </div>
+              <span class="chev">›</span>
+            </div>
+
+            <div class="moto-card alert">
+              <div class="moto-thumb">
+                <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#12151A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+              </div>
+              <div class="moto-info">
+                <div class="moto-top">
+                  <span class="moto-name">XYZ-5678</span>
+                  <span class="moto-tag">Fora da área</span>
+                </div>
+                <div class="moto-plate">Nmax 160 · Carlos Souza</div>
+                <div class="moto-meta"><span class="status-dot"></span>atualizado agora</div>
+              </div>
+              <span class="chev">›</span>
+            </div>
+
+            <div class="moto-card">
+              <div class="moto-thumb">
+                <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#12151A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+              </div>
+              <div class="moto-info">
+                <div class="moto-top">
+                  <span class="moto-name">QWE-9012</span>
+                  <span class="moto-tag">Na área</span>
+                </div>
+                <div class="moto-plate">CG 160 · Ana Paula</div>
+                <div class="moto-meta"><span class="status-dot"></span>atualizado há 5 min</div>
+              </div>
+              <span class="chev">›</span>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item active"><span class="lbl">HOME</span></div>
+            <div class="nav-item"><span class="lbl">MAPA</span></div>
+            <div class="nav-item"><span class="lbl">HISTÓRICO</span></div>
+            <div class="nav-item"><span class="lbl">PERFIL</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Alerta fica no topo, acima da lista de motos — não precisa rolar pra ver o que importa agora</li>
+          <li>Faixa lateral colorida no card (verde/vermelho) permite escanear o status sem ler texto</li>
+          <li>Tocar em qualquer card ou no banner de alerta leva direto aos Detalhes da Moto (Fluxo 03)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SEM ALERTA -->
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">14</span> Dashboard · Tudo Certo</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="dash-head">
+              <div class="dash-title">Sua frota</div>
+              <span class="fleet-pill">3/3 ONLINE</span>
+            </div>
+
+            <div class="alert-banner ok">
+              <span class="ico">✓</span>
+              <span class="txt"><b>Nenhum alerta ativo</b>Todas as motos dentro do combinado</span>
+            </div>
+
+            <div class="section-label">Motos</div>
+
+            <div class="moto-card">
+              <div class="moto-thumb">
+                <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#12151A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+              </div>
+              <div class="moto-info">
+                <div class="moto-top">
+                  <span class="moto-name">ABC-1234</span>
+                  <span class="moto-tag">Na área</span>
+                </div>
+                <div class="moto-plate">Factor 150 · João Silva</div>
+                <div class="moto-meta"><span class="status-dot"></span>atualizado há 2 min</div>
+              </div>
+              <span class="chev">›</span>
+            </div>
+
+            <div class="moto-card">
+              <div class="moto-thumb">
+                <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#12151A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+              </div>
+              <div class="moto-info">
+                <div class="moto-top">
+                  <span class="moto-name">XYZ-5678</span>
+                  <span class="moto-tag">Na área</span>
+                </div>
+                <div class="moto-plate">Nmax 160 · Carlos Souza</div>
+                <div class="moto-meta"><span class="status-dot"></span>atualizado há 1 min</div>
+              </div>
+              <span class="chev">›</span>
+            </div>
+
+            <div class="moto-card">
+              <div class="moto-thumb">
+                <svg width="20" height="20" viewBox="0 0 100 100" fill="none"><polyline points="14,72 33,28 50,54 69,24 88,72" stroke="#12151A" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+              </div>
+              <div class="moto-info">
+                <div class="moto-top">
+                  <span class="moto-name">QWE-9012</span>
+                  <span class="moto-tag">Na área</span>
+                </div>
+                <div class="moto-plate">CG 160 · Ana Paula</div>
+                <div class="moto-meta"><span class="status-dot"></span>atualizado há 5 min</div>
+              </div>
+              <span class="chev">›</span>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <div class="nav-item active"><span class="lbl">HOME</span></div>
+            <div class="nav-item"><span class="lbl">MAPA</span></div>
+            <div class="nav-item"><span class="lbl">HISTÓRICO</span></div>
+            <div class="nav-item"><span class="lbl">PERFIL</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Banner verde some do topo da hierarquia visual quando não há nada crítico — não compete com a lista de motos</li>
+          <li>Mesmo sem alerta, ainda dá pra ver quando cada moto atualizou por último — transparência mesmo em dia tranquilo</li>
+          <li>Layout idêntico ao estado com alerta — o usuário não precisa reaprender a tela, só o que muda é a cor</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+</section>
+
+<section>
+<div class="screen-col">
+      <div class="screen-tag"><span class="n">15</span> Mapa · moto com alerta selecionada</div>
+      <div class="frame">
+        <div class="screen on-dark">
+          <div class="statusbar light">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="map-canvas"></div>
+            <div class="map-topbar">
+              <div class="scr-title light">Mapa</div>
+              <div class="map-chips">
+                <span class="map-chip active">Todas (3)</span>
+                <span class="map-chip">Alertas (1)</span>
+              </div>
+            </div>
+
+            <div class="fence" style="left:14%; top:26%; width:150px; height:150px;"></div>
+            <div class="pin ok" style="left:26%; top:38%;"></div>
+            <div class="pin ok" style="left:40%; top:55%;"></div>
+            <div class="pin alert" style="left:74%; top:34%;"></div>
+
+            <div class="sheet">
+              <div class="sheet-handle"></div>
+              <div class="sheet-top">
+                <span class="sheet-name">XYZ-5678</span>
+                <span class="sheet-tag">Fora da área</span>
+              </div>
+              <div class="sheet-sub">Nmax 160 · Carlos Souza</div>
+              <div class="sheet-row"><span class="k">Localização</span><span class="v">Av. Brasil, 4200</span></div>
+              <div class="sheet-row"><span class="k">Status do rastreador</span><span class="v">Conectado</span></div>
+              <div class="sheet-row"><span class="k">Última atualização</span><span class="v">agora</span></div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><span class="lbl">HOME</span></div>
+            <div class="nav-item active"><span class="lbl">MAPA</span></div>
+            <div class="nav-item"><span class="lbl">HISTÓRICO</span></div>
+            <div class="nav-item"><span class="lbl">PERFIL</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Cerca virtual desenhada como contorno pontilhado — a moto em alerta aparece visivelmente fora dela</li>
+          <li>Cartão inferior sempre mostra a última localização conhecida, mesmo se o rastreador cair (não some a informação)</li>
+          <li>Chips "Todas / Alertas" filtram os pinos sem precisar sair do mapa</li>
+        </ul>
+      </div>
+      </div>
+   </section>
+   <section>
+      <div class="screens">
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">16</span> Histórico · com trajeto</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="scr-title" style="margin-bottom:14px;">Histórico</div>
+
+            <div class="chip-row">
+              <span class="moto-chip active">ABC-1234</span>
+              <span class="moto-chip">XYZ-5678</span>
+              <span class="moto-chip">QWE-9012</span>
+            </div>
+
+            <div class="date-row">
+              <span class="darrow">‹</span>
+              <span class="dlabel">Hoje · 8 de agosto</span>
+              <span class="darrow">›</span>
+            </div>
+
+            <div class="route-preview">
+              <svg viewBox="0 0 300 170" width="100%" height="100%" preserveAspectRatio="none">
+                <polyline points="30,140 70,90 110,110 150,50 190,70 240,30" fill="none" stroke="#3452FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                <circle cx="30" cy="140" r="5" fill="#D4FF3D"></circle>
+                <circle cx="240" cy="30" r="5" fill="#D4FF3D"></circle>
+              </svg>
+            </div>
+
+            <div class="stat-grid">
+              <div class="stat-box"><div class="sv">38km</div><div class="sl">Rodados</div></div>
+              <div class="stat-box"><div class="sv">07:20</div><div class="sl">Início</div></div>
+              <div class="stat-box"><div class="sv">18:42</div><div class="sl">Última</div></div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><span class="lbl">HOME</span></div>
+            <div class="nav-item"><span class="lbl">MAPA</span></div>
+            <div class="nav-item active"><span class="lbl">HISTÓRICO</span></div>
+            <div class="nav-item"><span class="lbl">PERFIL</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Trajeto sobre mapa, não lista de coordenadas — mais rápido de ler num relance</li>
+          <li>Chip de moto + seletor de dia ficam fixos no topo, então trocar o filtro não exige rolar a tela</li>
+          <li>Resumo (km, início, última atualização) complementa o visual sem exigir abrir outra tela</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">17</span> Histórico · sem dados</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="scr-title" style="margin-bottom:14px;">Histórico</div>
+
+            <div class="chip-row">
+              <span class="moto-chip">ABC-1234</span>
+              <span class="moto-chip active">XYZ-5678</span>
+              <span class="moto-chip">QWE-9012</span>
+            </div>
+
+            <div class="date-row">
+              <span class="darrow">‹</span>
+              <span class="dlabel">3 de agosto</span>
+              <span class="darrow">›</span>
+            </div>
+
+            <div class="empty-state">
+              <div class="empty-ico">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M4 6h16M4 18h10" stroke="#5B6169" stroke-width="1.8" stroke-linecap="round"></path></svg>
+              </div>
+              <div class="empty-title">Nenhum trajeto registrado neste período</div>
+              <div class="empty-sub">A XYZ-5678 não teve movimentação registrada em 3 de agosto. Tente outra data.</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><span class="lbl">HOME</span></div>
+            <div class="nav-item"><span class="lbl">MAPA</span></div>
+            <div class="nav-item active"><span class="lbl">HISTÓRICO</span></div>
+            <div class="nav-item"><span class="lbl">PERFIL</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Mensagem nomeia a moto e a data — evita ambiguidade sobre o que exatamente está vazio</li>
+          <li>Seletor de moto e data continuam ativos no estado vazio, pra facilitar tentar outra combinação</li>
+        </ul>
+      </div>
+    </section>
+<section>
+    <div class="screens">
+    <div class="screen-col">
+      <div class="screen-tag"><span class="n">18</span> Perfil</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="icons"><span class="sb-dot"></span><span class="sb-dot"></span><span class="sb-dot"></span></span>
+          </div>
+          <div class="scr-body">
+            <div class="profile-head">
+              <div class="avatar"><span>RM</span></div>
+              <div class="profile-name">Rio Motos Locadora</div>
+              <div class="profile-meta">contato@riomotos.com.br</div>
+            </div>
+
+            <div class="menu-list">
+              <div class="menu-item">
+                <span class="mi-left"><span class="mi-ico">👤</span>Editar conta</span>
+                <span class="chev" style="color:var(--asphalt)">›</span>
+              </div>
+              <div class="menu-item">
+                <span class="mi-left"><span class="mi-ico">🔒</span>Alterar senha</span>
+                <span class="chev" style="color:var(--asphalt)">›</span>
+              </div>
+              <div class="menu-item">
+                <span class="mi-left"><span class="mi-ico">🔔</span>Notificações push</span>
+                <span class="toggle"></span>
+              </div>
+              <div class="menu-item">
+                <span class="mi-left"><span class="mi-ico">💬</span>Ajuda e suporte</span>
+                <span class="chev" style="color:var(--asphalt)">›</span>
+              </div>
+            </div>
+
+            <div class="logout-btn">Sair da conta</div>
+            <div class="version-txt">MotoTrack · v1.0.0 (MVP)</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><span class="lbl">HOME</span></div>
+            <div class="nav-item"><span class="lbl">MAPA</span></div>
+            <div class="nav-item"><span class="lbl">HISTÓRICO</span></div>
+            <div class="nav-item active"><span class="lbl">PERFIL</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="annot">
+        <div class="annot-title">Decisões de UI</div>
+        <ul>
+          <li>Toggle de notificações fica visível aqui — usuário controla o requisito não funcional de Push Notification</li>
+          <li>"Sair da conta" em vermelho-contorno, separado do resto do menu — ação que merece pausa antes de tocar</li>
+          <li>MVP enxuto: sem gestão de equipe/funcionários ainda (fica pra v2, quando virar multi-usuário)</li>
+        </ul>
+    </div>
+  </div>
+</section>
+  </div>
+
+  </div>
+  </body> 
